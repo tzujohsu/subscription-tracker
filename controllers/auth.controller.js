@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 import User from '../models/user.model.js';
+import TokenBlacklist from '../models/tokenBlacklist.model.js';
 import { JWT_SECRET, JWT_EXPIRES_IN } from '../config/env.js';
 // request body: is an object containing the data sent by the client (POST)
 
@@ -89,4 +90,36 @@ export const signIn = async (req, res, next) => {
 
 export const signOut = async (req, res, next) => {
     // Implement sign out logic
+    try {
+        // Get token from authorization header
+        let token;
+        if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
+            token = req.headers.authorization.split(' ')[1];
+        }
+        
+        if(!token) {
+            const error = new Error('No token provided');
+            error.statusCode = 401;
+            throw error;
+        }
+
+        // Verify the token to get user ID and expiration
+        const decoded = jwt.verify(token, JWT_SECRET);
+        
+        // Add token to the blacklist
+        await TokenBlacklist.create({
+            token,
+            userId: decoded.user_Id,
+            expiresAt: new Date(Date.now() + 5 * 1000) // expires in 5 seconds
+        });
+
+        res.status(200).json({
+            success: true,
+            message: 'User signed out successfully'
+        });
+        
+    } catch (error) {
+        next(error);
+    }
 }
+

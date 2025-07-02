@@ -10,6 +10,7 @@ import connectToDatabase from './database/mongodb.js';
 import errorMiddleware from './middlewares/error.middleware.js';
 import arcjetMiddleware from './middlewares/arcjet.middleware.js';
 import workflowRouter from './routes/workflow.routes.js';
+import  startTokenCleanup  from './utils/tokenCleanup.js';
 
 const app = express();
 
@@ -34,6 +35,8 @@ app.listen(PORT, async () => {
     console.log(`Subscription Tracker API is running on http://localhost:${PORT}`);
 
     await connectToDatabase();
+    
+    startTokenCleanup(); // token cleanup scheduler
 });
 
 export default app;
