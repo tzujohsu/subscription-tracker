@@ -12,3 +12,7 @@ including JWT authentication, database modeling, secure API architecture, email 
 -	Email Reminders: Automated reminder workflow using Upstash and custom email templates
 -	Error Handling: Centralized error middleware with custom error classes
 -	Security: Arcjet integration for bot protection and rate limiting
+
+---
+
+<img src="demo.png" width="400">
