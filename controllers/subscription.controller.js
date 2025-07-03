@@ -83,3 +83,34 @@ export const getUserSubscriptions = async (req, res, next) => {
         next(error);
     }
 }
+
+export const cancelSubscription = async (req, res, next) => {
+    try {
+        
+        const subscription = await Subscription.findById(req.params.id);
+        if (!subscription) {
+            const error = new Error('Subscription not found');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        if (subscription.status === 'cancelled') {
+            const error = new Error('Subscription already cancelled');
+            error.statusCode = 409;
+            throw error;
+        }
+
+        subscription.status = 'cancelled';
+        subscription.renewalDate = null;
+
+        await subscription.save();
+
+        res.status(200).json({
+            success: true,
+            data: subscription,
+        });
+
+    } catch (error) {
+        next(error);
+    }
+}
