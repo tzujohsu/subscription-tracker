@@ -4,6 +4,19 @@ import { workflowClient } from '../config/upstash.js';
 import { SERVER_URL } from '../config/env.js';
 
 
+export const getSubscriptions = async (req, res, next) => {
+    try {
+        const subscriptions = await Subscription.find().select('name user status startDate');
+
+        res.status(200).json({
+            success: true,
+            data: subscriptions,
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 export const createSubscription = async (req, res, next) => {
     try {
         const subscription = await subscriptionRouter.create({
