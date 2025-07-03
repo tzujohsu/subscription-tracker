@@ -17,6 +17,25 @@ export const getSubscriptions = async (req, res, next) => {
     }
 }
 
+export const getSubscription = async (req, res, next) => {
+    try {
+        const subscription = await Subscription.findById(req.params.id);
+        if (!subscription) {
+            const error = new Error('Subscription not found');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        res.status(200).json({
+            success: true,
+            data: subscription,
+        });
+
+    } catch (error) {
+        next(error);
+    }
+}
+
 export const createSubscription = async (req, res, next) => {
     try {
         const subscription = await subscriptionRouter.create({
